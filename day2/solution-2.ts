@@ -19,8 +19,6 @@ type Game = {
 
 type MinBalls = { red: number; green: number; blue: number }
 
-//Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
-
 const parseToGame = (unparsedGame: string): Game => {
   const id = Number(unparsedGame.split(':')[0].split(' ')[1])
   const unparsedSets = unparsedGame.split(': ')[1].split('; ')
