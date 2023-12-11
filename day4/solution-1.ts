@@ -14,7 +14,28 @@ type Card = {
 
 const solution = (data: string[]) => {
   const cards = getCards(data)
-  return cards
+
+  return cards.reduce((acc, card) => {
+    const winners = card.playedNumbers.reduce((acc, playedNumber) => {
+      if (card.winningNumbers.includes(playedNumber)) {
+        return acc + 1
+      }
+      return acc
+    }, 0)
+    return acc + pow(winners)
+  }, 0)
+}
+
+const pow = (n: number) => {
+  if (n === 0) {
+    return 0
+  }
+
+  if (n === 1) {
+    return 1
+  }
+
+  return Math.pow(2, n - 1)
 }
 
 const getCards = (data: string[]) => {
@@ -31,9 +52,13 @@ const getCards = (data: string[]) => {
       playedNumbers: play.map((p) => +p),
       cardNumber: Number(cardNumber),
     })
+
     return acc
   }, new Array<Card>())
 }
 
-const result = solution(test)
+// const result = solution(test)
+// console.log('result', result)
+
+const result = solution(data)
 console.log('result', result)
