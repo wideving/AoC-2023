@@ -1,7 +1,7 @@
 import parseData from '../utils/data-parser'
 
-const data = await parseData(Bun.file('day6/data.txt'))
-const test = await parseData(Bun.file('day6/test1.txt'))
+const data = await parseData(Bun.file('day6/data2.txt'))
+const test = await parseData(Bun.file('day6/test2.txt'))
 
 type Race = {
   time: number
