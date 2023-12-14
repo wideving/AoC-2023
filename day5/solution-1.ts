@@ -3,8 +3,11 @@ import parseData from '../utils/data-parser'
 const data = await parseData(Bun.file('day5/data.txt'))
 const test = await parseData(Bun.file('day5/test1.txt'))
 
-type Source = number
-type Destination = number
+type Almanac = {
+  source: number
+  destination: number
+  range: number
+}
 
 const toMaps = (data: string[]) => {
   const seeds = data
@@ -14,18 +17,17 @@ const toMaps = (data: string[]) => {
     .map((n) => parseInt(n))
 
   const filtered = data.filter((r) => r !== '')
-  const rootMap: Map<string, Map<Source, Destination>> = new Map()
-
+  const rootMap: Map<string, Almanac[]> = new Map()
   let name: string = ''
 
   for (const row of filtered) {
     if (row.includes(':')) {
       name = row.split(' ')[0]
-      rootMap.set(name, new Map())
+      rootMap.set(name, [])
       continue
     }
 
-    const map = rootMap.get(name)!
+    const almanacs = rootMap.get(name)!
 
     const [destinationStr, sourceStr, rangeStr] = row.split(' ')
 
@@ -33,48 +35,45 @@ const toMaps = (data: string[]) => {
     const source = parseInt(sourceStr)
     const range = parseInt(rangeStr)
 
-    for (let i = 0; i < range; i++) {
-      map.set(source + i, destination + i)
-    }
+    almanacs.push({
+      source,
+      destination,
+      range,
+    })
   }
 
   return {
     seeds,
-    maps: rootMap,
+    almanacs: rootMap,
   }
 }
 
 const solution = (data: string[]) => {
-  const { seeds, maps } = toMaps(data)
+  const { seeds, almanacs } = toMaps(data)
+  const almanacValues = Array.from(almanacs.values())
 
-  const seedToSoil = maps.get('seed-to-soil')!
-  const soilToFertilizer = maps.get('soil-to-fertilizer')!
-  const fertilizerToWater = maps.get('fertilizer-to-water')!
-  const waterToLight = maps.get('water-to-light')!
-  const lightToTemperature = maps.get('light-to-temperature')!
-  const temperatureToHumidity = maps.get('temperature-to-humidity')!
-  const humidityToLocation = maps.get('humidity-to-location')!
+  const locationSeeds: number[] = []
 
-  return seeds
-    .reduce((acc, curr) => {
-      const soil = seedToSoil.get(curr) ?? curr
-      const fertilizer = soilToFertilizer.get(soil) ?? soil
-      const water = fertilizerToWater.get(fertilizer) ?? fertilizer
-      const light = waterToLight.get(water) ?? water
-      const temperature = lightToTemperature.get(light) ?? light
-      const humidity = temperatureToHumidity.get(temperature) ?? temperature
-      const location = humidityToLocation.get(humidity) ?? humidity
+  for (const seed of seeds) {
+    let destinationPosition: number = seed
+    for (const almanac of almanacValues) {
+      for (const { source, destination, range } of almanac) {
+        const sourceEnd = source + range
+        if (destinationPosition >= source && destinationPosition <= sourceEnd) {
+          const sourceDiff = destinationPosition - source
+          destinationPosition = destination + sourceDiff
+          break
+        }
+      }
+    }
+    locationSeeds.push(destinationPosition)
+  }
 
-      acc.push(location)
-
-      return acc
-    }, new Array<number>())
-    .sort((a, b) => b - a)
-    .pop()
+  return locationSeeds.sort((a, b) => b - a).pop()
 }
 
 // const result = solution(test)
 // console.log(result)
 
-const result = solution(test)
+const result = solution(data)
 console.log('result', result)
