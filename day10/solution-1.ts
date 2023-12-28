@@ -24,8 +24,6 @@ const getStartCoordinates = (): Coordinates => {
       if (pipeSystem[i][j] === 'S') {
         const start = { x: j, y: i }
         pipeSystem[start.y][start.x] = 'J'
-        // const surrounding = getSurroundingPipeCoordinates(start)
-
         return start
       }
     }
