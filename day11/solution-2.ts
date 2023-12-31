@@ -101,7 +101,6 @@ const manhattanDistance = (pair: Pair, emptyColumns: number[], emptyRows: number
 }
 
 const solution = (data: string[]) => {
-  //3 get manhanttan distance of all pairs
   const { image, emptyColumns, emptyRows } = getCosmos(data)
   const galaxyPositions = getGalaxyPositions(image)
   const pairs = getPairs(galaxyPositions)
